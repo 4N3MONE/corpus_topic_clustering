@@ -17,7 +17,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 parser = argparse.ArgumentParser(description="Hello MY Name is Seungmin! Nice to meet you~")
 parser.add_argument('-p', '--path', type=str, help='Enter your relative json path')
 parser.add_argument('-e', '--embedding_model', type=str, default='sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens')
-parser.add_argument('-n', '--nr_topics', type=int, default=3, help="Enter nr_topics the number of topics representing document")
+parser.add_argument('-n', '--nr_topics', type=int, default=10, help="Enter nr_topics the number of topics representing document")
 parser.add_argument('-t', '--top_n_words', type=int, default=10, help="Enter top_n_words")
 parser.add_argument('-s', '--savepath', type=str, default=None, help='Enter your save file path')
 
