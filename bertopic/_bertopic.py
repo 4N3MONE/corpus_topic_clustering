@@ -8,6 +8,10 @@ from tqdm import tqdm
 from sklearn.feature_extraction.text import CountVectorizer
 import sys
 import argparse
+import pyLDAvis
+import numpy as np
+import time
+
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 parser = argparse.ArgumentParser(description="Hello MY Name is Seungmin! Nice to meet you~")
@@ -58,9 +62,15 @@ if __name__=="__main__":
     model = BERTopic(embedding_model=args.embedding_model,
     		vectorizer_model=vectorizer,
             nr_topics=args.nr_topics, # 문서를 대표하는 토픽의 갯수
-            top_n_words=args.top_n_words)
+            top_n_words=args.top_n_words,
+            calculate_probabilities=True)
+   
+    
     print('start fitting...')
     topics, probs = model.fit_transform(preprocessed_documents)
-    model.get_topic_info()
-    model.visualize_topics()
-    model.visualize_distribution(probs[0])
+    df = model.get_topic_info()
+    print(df)
+    fig = model.visualize_topics()
+    fig.write_html("/home/yys/corpus_topic_clustering/LSM/bertopic/fig1.html")
+    fig2 = model.visualize_distribution(probs[0])
+    fig2.write_html("/home/yys/corpus_topic_clustering/LSM/bertopic/fig2.html")
