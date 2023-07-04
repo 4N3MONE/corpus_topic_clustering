@@ -1,9 +1,11 @@
-from sklearn.feature_extraction.text import CountVectorizer
-from mecab import MeCab
-from bertopic import BERTopic
 import json
-import sys
-import tqdm
+import pickle
+import glob, os
+import pandas as pd
+from kiwipiepy import Kiwi
+from bertopic import BERTopic
+from tqdm import tqdm
+from sklearn.feature_extraction.text import CountVectorizer
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # 불용어를 정의한다
