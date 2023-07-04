@@ -23,7 +23,7 @@ parser.add_argument('-s', '--savepath', type=str, default=None, help='Enter your
 
 
 # 불용어를 정의한다
-with open('./stopword.txt','r') as f:
+with open('./stopwords.txt','r') as f:
   user_stopword = f.readline()
 
 
