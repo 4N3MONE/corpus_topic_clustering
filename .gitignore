@@ -5,6 +5,7 @@ __pycache__/
 .DS_Store
 .json
 .zip
+.gitignore
 
 # C extensions
 *.so
