@@ -19,9 +19,13 @@ parser.add_argument('-p', '--path', type=str, help='Enter your relative json pat
 parser.add_argument('-e', '--embedding_model', type=str, default='sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens')
 parser.add_argument('-n', '--nr_topics', type=int, default=3, help="Enter nr_topics the number of topics representing document")
 parser.add_argument('-t', '--top_n_words', type=int, default=10, help="Enter top_n_words")
+parser.add_argument('-s', '--savepath', type=str, default=None, help='Enter your save file path')
+
 
 # 불용어를 정의한다
-user_stop_word = ["안녕", "안녕하세요", "때문", "지금", "감사", "네", "감사합니다"]
+with open('./stopword.txt','r') as f:
+  user_stopword = f.readline()
+
 
 # 토크나이저에 명사만 추가한다
 extract_pos_list = ["NNG", "NNP"]
@@ -32,7 +36,7 @@ class CustomTokenizer:
     result = list()
     for word in self.kiwi.tokenize(text):
 # 명사이고, 길이가 2이상인 단어이고, 불용어 리스트에 없으면 추가하기
-      if word[1] in extract_pos_list and len(word[0]) > 1 and word[0] not in user_stop_word:
+      if word[1] in extract_pos_list and len(word[0]) > 1 and word[0] not in user_stopword:
         result.append(word[0])
     return result
 
@@ -65,12 +69,32 @@ if __name__=="__main__":
             top_n_words=args.top_n_words,
             calculate_probabilities=True)
    
-    
+    start_time = time.time()
     print('start fitting...')
     topics, probs = model.fit_transform(preprocessed_documents)
+    print(f'elapsed time:{time.time()-start_time}')
     df = model.get_topic_info()
-    print(df)
-    fig = model.visualize_topics()
-    fig.write_html("/home/yys/corpus_topic_clustering/LSM/bertopic/fig1.html")
-    fig2 = model.visualize_distribution(probs[0])
-    fig2.write_html("/home/yys/corpus_topic_clustering/LSM/bertopic/fig2.html")
+    
+    save_path = args.save_path if args.save_path != None else '.'.join(args.path.split('.')[:-1]) 
+    df.to_csv(save_path+'.csv', encoding='utf-8-sig', index=False)
+
+    # Prepare data for PyLDAVis
+    top_n = 5
+
+    topic_term_dists = model.c_tf_idf_.toarray()[:top_n+1, ]
+    new_probs = probs[:, :top_n]
+    outlier = np.array(1 - new_probs.sum(axis=1)).reshape(-1, 1)
+    doc_topic_dists = np.hstack((new_probs, outlier))
+    doc_lengths = [len(doc) for doc in preprocessed_documents]
+    vocab = [word for word in model.vectorizer_model.vocabulary_.keys()]
+    term_frequency = [model.vectorizer_model.vocabulary_[word] for word in vocab]
+
+    data = {'topic_term_dists': topic_term_dists,
+            'doc_topic_dists': doc_topic_dists,
+            'doc_lengths': doc_lengths,
+            'vocab': vocab,
+            'term_frequency': term_frequency}
+
+    # Visualize using pyLDAvis
+    vis_data= pyLDAvis.prepare(topic_term_dists=topic_term_dists, doc_topic_dists=doc_topic_dists,doc_lengths=doc_lengths,vocab=vocab, term_frequency=term_frequency, mds='mmds')
+    pyLDAvis.save_html(vis_data, save_path+'.html')
