@@ -6,7 +6,15 @@ from kiwipiepy import Kiwi
 from bertopic import BERTopic
 from tqdm import tqdm
 from sklearn.feature_extraction.text import CountVectorizer
+import sys
+import argparse
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+parser = argparse.ArgumentParser(description="Hello MY Name is Seungmin! Nice to meet you~")
+parser.add_argument('-p', '--path', type=str, help='Enter your relative json path')
+parser.add_argument('-e', '--embedding_model', type=str, default='sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens')
+parser.add_argument('-n', '--nr_topics', type=int, default=3, help="Enter nr_topics the number of topics representing document")
+parser.add_argument('-t', '--top_n_words', type=int, default=10, help="Enter top_n_words")
 
 # 불용어를 정의한다
 user_stop_word = ["안녕", "안녕하세요", "때문", "지금", "감사", "네", "감사합니다"]
@@ -42,13 +50,15 @@ def construct_data(json_file_path: str):
     return preprocessed_documents
             
 if __name__=="__main__":
-    preprocessed_documents = construct_data(sys.argv[1])
+    args = parser.parse_args()
+    
+    preprocessed_documents = construct_data(args.path)
     custom_tokenizer = CustomTokenizer(Kiwi())
     vectorizer = CountVectorizer(tokenizer=custom_tokenizer, max_features=3000)
-    model = BERTopic(embedding_model="sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens",
+    model = BERTopic(embedding_model=args.embedding_model,
     		vectorizer_model=vectorizer,
-            nr_topics=3, # 문서를 대표하는 토픽의 갯수
-            top_n_words=10)
+            nr_topics=args.nr_topics, # 문서를 대표하는 토픽의 갯수
+            top_n_words=args.top_n_words)
     print('start fitting...')
     topics, probs = model.fit_transform(preprocessed_documents)
     model.get_topic_info()
