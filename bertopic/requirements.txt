@@ -1,6 +1,6 @@
 bertopic
 bertopic[visualization]
 kiwipiepy
-scikit-learn
+scikit-learn==1.2.2
 numpy==1.24
 pandas
