@@ -75,7 +75,7 @@ if __name__=="__main__":
     print(f'elapsed time:{time.time()-start_time}')
     df = model.get_topic_info()
     
-    save_path = args.save_path if args.save_path != None else '.'.join(args.path.split('.')[:-1]) 
+    save_path = args.savepath if args.savepath != None else '.'.join(args.path.split('.')[:-1]) 
     df.to_csv(save_path+'.csv', encoding='utf-8-sig', index=False)
 
     # Prepare data for PyLDAVis
