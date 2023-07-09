@@ -76,7 +76,7 @@ if __name__=="__main__":
     df = model.get_topic_info()
     
     save_path = args.savepath if args.savepath != None else '.'.join(args.path.split('.')[:-1]) 
-    df.to_csv(save_path+'.csv', encoding='utf-8-sig', index=False)
+    df.to_csv(save_path+'result_df.csv', encoding='utf-8-sig', index=False)
 
     # Prepare data for PyLDAVis
     top_n = 5
@@ -97,4 +97,4 @@ if __name__=="__main__":
 
     # Visualize using pyLDAvis
     vis_data= pyLDAvis.prepare(topic_term_dists=topic_term_dists, doc_topic_dists=doc_topic_dists,doc_lengths=doc_lengths,vocab=vocab, term_frequency=term_frequency, mds='mmds')
-    pyLDAvis.save_html(vis_data, save_path+'.html')
+    pyLDAvis.save_html(vis_data, save_path+'result_viz.html')
