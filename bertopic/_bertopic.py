@@ -79,7 +79,7 @@ if __name__=="__main__":
     df.to_csv(save_path+'result_df.csv', encoding='utf-8-sig', index=False)
 
     # Prepare data for PyLDAVis
-    top_n = 5
+    top_n = args.nr_topics
 
     topic_term_dists = model.c_tf_idf_.toarray()[:top_n+1, ]
     new_probs = probs[:, :top_n]
